@@ -64,7 +64,6 @@ export default function App() {
       {result && (
         <div className="w-full max-w-2xl mt-10 space-y-6">
 
-          {/* BLOCO COMPONENTIZADO */}
           {[
             {
               title: "Premissas",
@@ -76,10 +75,14 @@ export default function App() {
                 ))
               )
             },
+
             {
               title: "Conclusão",
-              render: <p className="text-gray-700">{result.gpt.conclusion.natural}</p>
+              render: (
+                <p className="text-gray-700">{result.gpt.conclusion.natural}</p>
+              )
             },
+
             {
               title: "Lógica Formal",
               render: (
@@ -91,6 +94,45 @@ export default function App() {
                 </p>
               )
             },
+
+            /* ---------------------------
+               NOVA SEÇÃO: PROPOSIÇÕES
+            ---------------------------- */
+            {
+              title: "Proposições Formais",
+              render: (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm border border-gray-200 rounded-lg">
+                    <thead>
+                      <tr className="bg-gray-100 text-gray-700">
+                        <th className="px-3 py-2 text-left font-semibold">Label</th>
+                        <th className="px-3 py-2 text-left font-semibold">Frase (Natural)</th>
+                        <th className="px-3 py-2 text-left font-semibold">Forma Lógica</th>
+                        <th className="px-3 py-2 text-left font-semibold">Tipo</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {Object.keys(result.propositions || {}).map((key, i) => (
+                        <tr key={i} className="border-t border-gray-200">
+                          <td className="px-3 py-2 font-bold text-blue-600">{key}</td>
+                          <td className="px-3 py-2 text-gray-700">
+                            {result.propositions[key].natural}
+                          </td>
+                          <td className="px-3 py-2 text-green-700 font-mono">
+                            {result.propositions[key].formal}
+                          </td>
+                          <td className="px-3 py-2 text-yellow-600 font-medium">
+                            {result.propositions[key].type}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            },
+
             {
               title: "Notícias",
               render: (
@@ -117,6 +159,7 @@ export default function App() {
                 ))
               )
             },
+
             {
               title: "Veredito Geral",
               render: (
@@ -125,6 +168,7 @@ export default function App() {
                 </p>
               )
             }
+
           ].map((section, index) => (
             <div
               key={index}
