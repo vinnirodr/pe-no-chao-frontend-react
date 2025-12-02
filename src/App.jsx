@@ -60,29 +60,35 @@ export default function App() {
       {result && (
         <div className="w-full max-w-2xl mt-10 space-y-6">
           {[
+            /* PREMIÇAS */
             {
               title: "Premissas",
-              render: result.gpt.premises.map((p, i) => (
-                <p key={i} className="text-gray-700">
-                  <strong className="text-gray-900">P{i + 1}:</strong> {p.natural}
-                </p>
-              )),
+              render: (result.gpt?.premises || [])
+                .filter((p) => p && p.natural)
+                .map((p, i) => (
+                  <p key={i} className="text-gray-700">
+                    <strong className="text-gray-900">P{i + 1}:</strong>{" "}
+                    {p.natural}
+                  </p>
+                )),
             },
 
+            /* CONCLUSÃO */
             {
               title: "Conclusão",
               render: (
                 <p className="text-gray-700">
-                  {result.gpt.conclusion.natural}
+                  {result.gpt?.conclusion?.natural || "— Sem conclusão —"}
                 </p>
               ),
             },
 
+            /* LÓGICA FORMAL */
             {
               title: "Lógica Formal",
               render: (
                 <p className="text-lg font-medium">
-                  {result.logic.isValid ? (
+                  {result.logic?.isValid ? (
                     <span className="text-green-600">✔ Argumento Válido</span>
                   ) : (
                     <span className="text-red-600">✘ Argumento Inválido</span>
@@ -91,7 +97,7 @@ export default function App() {
               ),
             },
 
-            // NOVA SEÇÃO: PROPOSIÇÕES FORMAIS
+            /* PROPOSIÇÕES FORMAIS */
             {
               title: "Proposições Formais",
               render: (
@@ -99,39 +105,40 @@ export default function App() {
                   <table className="min-w-full text-sm border border-gray-200 rounded-lg">
                     <thead>
                       <tr className="bg-gray-100 text-gray-700">
-                        <th className="px-3 py-2 text-left font-semibold">Label</th>
+                        <th className="px-3 py-2 text-left font-semibold">
+                          Label
+                        </th>
                         <th className="px-3 py-2 text-left font-semibold">
                           Frase (Natural)
                         </th>
                         <th className="px-3 py-2 text-left font-semibold">
                           Forma Lógica
                         </th>
-                        <th className="px-3 py-2 text-left font-semibold">Tipo</th>
+                        <th className="px-3 py-2 text-left font-semibold">
+                          Tipo
+                        </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {Object.entries(result.propositions || {}).map(
-                        ([key, value], i) => {
-                          let natural = "";
-                          let formal = "";
-                          let type = "";
 
-                          if (value && typeof value === "object") {
-                            // Caso futuro: { natural, formal, type }
-                            natural = value.natural ?? "";
-                            formal = value.formal ?? "";
-                            type = value.type ?? "";
-                          } else {
-                            // Formato atual: "Bolsonaro foi esfaqueado"
-                            natural = String(value ?? "");
-                          }
+                    <tbody>
+                      {Object.entries(result.propositions || {})
+                        .filter(([label, obj]) => obj)
+                        .map(([key, value], i) => {
+                          const natural = value?.natural || "";
+                          const formal = value?.formal || "";
+                          const type = value?.type || "";
 
                           return (
-                            <tr key={i} className="border-t border-gray-200">
+                            <tr
+                              key={i}
+                              className="border-t border-gray-200"
+                            >
                               <td className="px-3 py-2 font-bold text-blue-600">
                                 {key}
                               </td>
-                              <td className="px-3 py-2 text-gray-700">{natural}</td>
+                              <td className="px-3 py-2 text-gray-700">
+                                {natural}
+                              </td>
                               <td className="px-3 py-2 text-green-700 font-mono">
                                 {formal}
                               </td>
@@ -140,45 +147,57 @@ export default function App() {
                               </td>
                             </tr>
                           );
-                        }
-                      )}
+                        })}
                     </tbody>
                   </table>
                 </div>
               ),
             },
 
+            /* NOTÍCIAS (FAKE NEWS) */
             {
-              title: "Notícias",
-              render: result.noticias.map((item, i) => (
-                <div key={i} className="mb-4">
-                  <h3 className="font-medium text-gray-800 mb-1">
-                    Premissa: {item.premise}
-                  </h3>
-                  <ul className="list-disc ml-5 text-gray-600">
-                    {item.sources.map((s, j) => (
-                      <li key={j}>
-                        <strong className="text-gray-900">{s.fonte}</strong>:{" "}
-                        {s.opniao} —{" "}
-                        <a
-                          href={s.link}
-                          target="_blank"
-                          className="text-blue-600 underline"
-                        >
-                          Fonte
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )),
+              title: "Notícias / Confiabilidade",
+              render: (result.noticias || [])
+                .filter((item) => item)
+                .map((item, i) => (
+                  <div key={i} className="mb-4">
+                    <h3 className="font-medium text-gray-800 mb-1">
+                      Premissa: {item.premise || "—"}
+                    </h3>
+
+                    {(item.sources || []).length > 0 ? (
+                      <ul className="list-disc ml-5 text-gray-600">
+                        {item.sources.map((s, j) => (
+                          <li key={j}>
+                            <strong className="text-gray-900">
+                              {s.fonte}
+                            </strong>
+                            : {s.opniao} —{" "}
+                            <a
+                              href={s.link}
+                              target="_blank"
+                              className="text-blue-600 underline"
+                            >
+                              Fonte
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-500">
+                        Nenhuma fonte retornada para essa premissa.
+                      </p>
+                    )}
+                  </div>
+                )),
             },
 
+            /* VEREDITO FINAL */
             {
               title: "Veredito Geral",
               render: (
                 <p className="text-xl font-semibold text-gray-900">
-                  {result.verdict}
+                  {result.verdict || "—"}
                 </p>
               ),
             },
