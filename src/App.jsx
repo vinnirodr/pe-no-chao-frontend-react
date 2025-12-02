@@ -43,13 +43,12 @@ export default function App() {
       </button>
 
       {loading && (
-        <p className="text-center text-gray-300 mt-4">
-          Carregando análise...
-        </p>
+        <p className="text-center text-gray-300 mt-4">Carregando análise...</p>
       )}
 
       {result && (
         <div className="mt-6 space-y-4">
+          {/* Premissas */}
           <section className="bg-gray-800 p-4 rounded border border-gray-700">
             <h2 className="text-xl font-bold mb-2">Premissas</h2>
             {result.gpt.premises.map((p, i) => (
@@ -57,62 +56,3 @@ export default function App() {
                 <strong>P{i + 1}:</strong> {p.natural}
               </p>
             ))}
-          </section>
-
-          <section className="bg-gray-800 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-bold mb-2">Conclusão</h2>
-            <p>{result.gpt.conclusion.natural}</p>
-          </section>
-
-          <section className="bg-gray-800 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-bold mb-2">Lógica Formal</h2>
-            <p>{result.logic.isValid ? "✔ Válido" : "❌ Inválido"}</p>
-          </section>
-
-          <section className="bg-gray-800 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-bold mb-2">Fact-check</h2>
-            {result.fact_check.map((fc, i) => (
-              <div key={i} className="mb-2">
-                <p>
-                  <strong>P{i + 1}:</strong>{" "}
-                  {fc.verified ? "✔ Factual" : "❌ Não verificado"}
-                </p>
-                <p className="text-sm text-gray-400">{fc.explicacao}</p>
-              </div>
-            ))}
-          </section>
-
-          <section className="bg-gray-800 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-bold mb-2">Notícias</h2>
-
-            {result.noticias.map((item, i) => (
-              <div key={i} className="mb-3">
-                <h3 className="font-semibold">Premissa: {item.premise}</h3>
-                <ul className="list-disc ml-5">
-                  {item.sources.map((s, j) => (
-                    <li key={j}>
-                      <strong>{s.fonte}</strong>: {s.opniao} —{" "}
-                      <a
-                        href={s.link}
-                        className="text-blue-400 underline"
-                        target="_blank"
-                      >
-                        Fonte
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </section>
-
-          <section className="bg-gray-800 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-bold mb-2">Veredito Geral</h2>
-            <p className="text-lg font-semibold">{result.verdict}</p>
-          </section>
-        </div>
-      )}
-    </div>
-  );
-}
-
