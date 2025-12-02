@@ -24,12 +24,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center px-6 py-14">
-      
       {/* HEADER */}
       <header className="text-center mb-12">
-        <h1 className="text-4xl font-semibold tracking-tight">
-          Pé-no-Chão
-        </h1>
+        <h1 className="text-4xl font-semibold tracking-tight">Pé-no-Chão</h1>
         <p className="text-gray-600 mt-2 text-lg">
           Análise lógica e factual, com clareza e simplicidade.
         </p>
@@ -37,7 +34,6 @@ export default function App() {
 
       {/* CARD PRINCIPAL */}
       <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-        
         <textarea
           className="w-full p-4 rounded-lg border border-gray-300 bg-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
           rows={5}
@@ -63,41 +59,39 @@ export default function App() {
       {/* RESULTADOS */}
       {result && (
         <div className="w-full max-w-2xl mt-10 space-y-6">
-
           {[
             {
               title: "Premissas",
-              render: (
-                result.gpt.premises.map((p, i) => (
-                  <p key={i} className="text-gray-700">
-                    <strong className="text-gray-900">P{i + 1}:</strong> {p.natural}
-                  </p>
-                ))
-              )
+              render: result.gpt.premises.map((p, i) => (
+                <p key={i} className="text-gray-700">
+                  <strong className="text-gray-900">P{i + 1}:</strong> {p.natural}
+                </p>
+              )),
             },
 
             {
               title: "Conclusão",
               render: (
-                <p className="text-gray-700">{result.gpt.conclusion.natural}</p>
-              )
+                <p className="text-gray-700">
+                  {result.gpt.conclusion.natural}
+                </p>
+              ),
             },
 
             {
               title: "Lógica Formal",
               render: (
                 <p className="text-lg font-medium">
-                  {result.logic.isValid ? 
-                    <span className="text-green-600">✔ Argumento Válido</span> : 
+                  {result.logic.isValid ? (
+                    <span className="text-green-600">✔ Argumento Válido</span>
+                  ) : (
                     <span className="text-red-600">✘ Argumento Inválido</span>
-                  }
+                  )}
                 </p>
-              )
+              ),
             },
 
-            /* ---------------------------
-               NOVA SEÇÃO: PROPOSIÇÕES
-            ---------------------------- */
+            // NOVA SEÇÃO: PROPOSIÇÕES FORMAIS
             {
               title: "Proposições Formais",
               render: (
@@ -106,58 +100,78 @@ export default function App() {
                     <thead>
                       <tr className="bg-gray-100 text-gray-700">
                         <th className="px-3 py-2 text-left font-semibold">Label</th>
-                        <th className="px-3 py-2 text-left font-semibold">Frase (Natural)</th>
-                        <th className="px-3 py-2 text-left font-semibold">Forma Lógica</th>
+                        <th className="px-3 py-2 text-left font-semibold">
+                          Frase (Natural)
+                        </th>
+                        <th className="px-3 py-2 text-left font-semibold">
+                          Forma Lógica
+                        </th>
                         <th className="px-3 py-2 text-left font-semibold">Tipo</th>
                       </tr>
                     </thead>
-
                     <tbody>
-                      {Object.keys(result.propositions || {}).map((key, i) => (
-                        <tr key={i} className="border-t border-gray-200">
-                          <td className="px-3 py-2 font-bold text-blue-600">{key}</td>
-                          <td className="px-3 py-2 text-gray-700">
-                            {result.propositions[key].natural}
-                          </td>
-                          <td className="px-3 py-2 text-green-700 font-mono">
-                            {result.propositions[key].formal}
-                          </td>
-                          <td className="px-3 py-2 text-yellow-600 font-medium">
-                            {result.propositions[key].type}
-                          </td>
-                        </tr>
-                      ))}
+                      {Object.entries(result.propositions || {}).map(
+                        ([key, value], i) => {
+                          let natural = "";
+                          let formal = "";
+                          let type = "";
+
+                          if (value && typeof value === "object") {
+                            // Caso futuro: { natural, formal, type }
+                            natural = value.natural ?? "";
+                            formal = value.formal ?? "";
+                            type = value.type ?? "";
+                          } else {
+                            // Formato atual: "Bolsonaro foi esfaqueado"
+                            natural = String(value ?? "");
+                          }
+
+                          return (
+                            <tr key={i} className="border-t border-gray-200">
+                              <td className="px-3 py-2 font-bold text-blue-600">
+                                {key}
+                              </td>
+                              <td className="px-3 py-2 text-gray-700">{natural}</td>
+                              <td className="px-3 py-2 text-green-700 font-mono">
+                                {formal}
+                              </td>
+                              <td className="px-3 py-2 text-yellow-600 font-medium">
+                                {type}
+                              </td>
+                            </tr>
+                          );
+                        }
+                      )}
                     </tbody>
                   </table>
                 </div>
-              )
+              ),
             },
 
             {
               title: "Notícias",
-              render: (
-                result.noticias.map((item, i) => (
-                  <div key={i} className="mb-4">
-                    <h3 className="font-medium text-gray-800 mb-1">
-                      Premissa: {item.premise}
-                    </h3>
-                    <ul className="list-disc ml-5 text-gray-600">
-                      {item.sources.map((s, j) => (
-                        <li key={j}>
-                          <strong className="text-gray-900">{s.fonte}</strong>: {s.opniao} —{" "}
-                          <a
-                            href={s.link}
-                            target="_blank"
-                            className="text-blue-600 underline"
-                          >
-                            Fonte
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))
-              )
+              render: result.noticias.map((item, i) => (
+                <div key={i} className="mb-4">
+                  <h3 className="font-medium text-gray-800 mb-1">
+                    Premissa: {item.premise}
+                  </h3>
+                  <ul className="list-disc ml-5 text-gray-600">
+                    {item.sources.map((s, j) => (
+                      <li key={j}>
+                        <strong className="text-gray-900">{s.fonte}</strong>:{" "}
+                        {s.opniao} —{" "}
+                        <a
+                          href={s.link}
+                          target="_blank"
+                          className="text-blue-600 underline"
+                        >
+                          Fonte
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )),
             },
 
             {
@@ -166,9 +180,8 @@ export default function App() {
                 <p className="text-xl font-semibold text-gray-900">
                   {result.verdict}
                 </p>
-              )
-            }
-
+              ),
+            },
           ].map((section, index) => (
             <div
               key={index}
@@ -180,7 +193,6 @@ export default function App() {
               <div className="space-y-3">{section.render}</div>
             </div>
           ))}
-
         </div>
       )}
     </div>
