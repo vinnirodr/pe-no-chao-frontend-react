@@ -24,6 +24,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center px-6 py-14">
+      
       {/* HEADER */}
       <header className="text-center mb-12">
         <h1 className="text-4xl font-semibold tracking-tight">Pé-no-Chão</h1>
@@ -59,6 +60,7 @@ export default function App() {
       {/* RESULTADOS */}
       {result && (
         <div className="w-full max-w-2xl mt-10 space-y-6">
+
           {[
             /* PREMIÇAS */
             {
@@ -97,6 +99,99 @@ export default function App() {
               ),
             },
 
+            /* EXPLICAÇÃO LÓGICA */
+            {
+              title: "Explicação da Lógica",
+              render: (
+                <p className="text-gray-700">
+                  {result.logic?.explanation || "—"}
+                </p>
+              ),
+            },
+
+            /* CONTRAEXEMPLO */
+            {
+              title: "Contraexemplo (se houver)",
+              render: result.logic?.example ? (
+                <div className="space-y-2">
+                  <p className="text-gray-700">{result.logic.example.descricao}</p>
+
+                  <div className="bg-gray-50 p-3 border rounded">
+                    <h4 className="font-semibold text-gray-800 mb-1">Atribuições:</h4>
+                    <ul className="ml-4 list-disc text-gray-700">
+                      {Object.entries(result.logic.example.valores).map(([key, val], i) => (
+                        <li key={i}>{key}: {val ? "Verdadeiro" : "Falso"}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <p className="text-gray-700">
+                    <strong>Premissas:</strong> {JSON.stringify(result.logic.example.premissas)}
+                  </p>
+
+                  <p className="text-gray-700">
+                    <strong>Conclusão:</strong> {String(result.logic.example.conclusao)}
+                  </p>
+
+                  <p className="text-gray-700 italic mt-1">
+                    {result.logic.example.explicacao}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-500">Nenhum contraexemplo — argumento válido.</p>
+              )
+            },
+
+            /* TABELA VERDADE - OPCIONAL */
+            {
+              title: "Tabela Verdade Completa",
+              render: result.logic?.truthTable ? (
+                <details className="text-gray-700">
+                  <summary className="cursor-pointer underline text-blue-600">
+                    Mostrar tabela ({result.logic.truthTable.length} linhas)
+                  </summary>
+
+                  <div className="overflow-x-auto mt-3">
+                    <table className="text-sm border border-gray-200 min-w-full">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          {result.logic.atoms.map((atom, i) => (
+                            <th key={i} className="px-2 py-1">{atom}</th>
+                          ))}
+                          <th className="px-2 py-1">Premissas</th>
+                          <th className="px-2 py-1">Conclusão</th>
+                          <th className="px-2 py-1">Válido</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {result.logic.truthTable.map((row, ri) => (
+                          <tr key={ri} className="border-t">
+                            {result.logic.atoms.map((atom, ai) => (
+                              <td key={ai} className="px-2 py-1">
+                                {String(row[atom])}
+                              </td>
+                            ))}
+                            <td className="px-2 py-1">
+                              {JSON.stringify(row.premises)}
+                            </td>
+                            <td className="px-2 py-1">
+                              {String(row.conclusion)}
+                            </td>
+                            <td className="px-2 py-1">
+                              {row.VALID ? "Sim" : "Não"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              ) : (
+                <p className="text-gray-500">Tabela não disponível.</p>
+              ),
+            },
+
             /* PROPOSIÇÕES FORMAIS */
             {
               title: "Proposições Formais",
@@ -105,18 +200,14 @@ export default function App() {
                   <table className="min-w-full text-sm border border-gray-200 rounded-lg">
                     <thead>
                       <tr className="bg-gray-100 text-gray-700">
-                        <th className="px-3 py-2 text-left font-semibold">
-                          Label
-                        </th>
+                        <th className="px-3 py-2 text-left font-semibold">Label</th>
                         <th className="px-3 py-2 text-left font-semibold">
                           Frase (Natural)
                         </th>
                         <th className="px-3 py-2 text-left font-semibold">
                           Forma Lógica
                         </th>
-                        <th className="px-3 py-2 text-left font-semibold">
-                          Tipo
-                        </th>
+                        <th className="px-3 py-2 text-left font-semibold">Tipo</th>
                       </tr>
                     </thead>
 
@@ -154,9 +245,9 @@ export default function App() {
               ),
             },
 
-            /* NOTÍCIAS (FAKE NEWS) */
+            /* NOTÍCIAS / CONFIABILIDADE */
             {
-              title: "Notícias / Confiabilidade",
+              title: "Confiabilidade Factual",
               render: (result.noticias || [])
                 .filter((item) => item)
                 .map((item, i) => (
@@ -192,7 +283,7 @@ export default function App() {
                 )),
             },
 
-            /* VEREDITO FINAL */
+            /* VEREDITO GERAL */
             {
               title: "Veredito Geral",
               render: (
@@ -201,6 +292,17 @@ export default function App() {
                 </p>
               ),
             },
+
+            /* EXPLICAÇÃO DO VEREDITO */
+            {
+              title: "Explicação do Veredito",
+              render: (
+                <p className="text-gray-700">
+                  {result.verdictExplanation || "—"}
+                </p>
+              ),
+            },
+
           ].map((section, index) => (
             <div
               key={index}
