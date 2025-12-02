@@ -92,22 +92,6 @@ export default function App() {
               )
             },
             {
-              title: "Fact-check",
-              render: (
-                result.fact_check.map((fc, i) => (
-                  <div key={i}>
-                    <p className="font-medium text-gray-900">
-                      P{i + 1}: {fc.verified ?
-                        <span className="text-green-600">✔ Factual</span> :
-                        <span className="text-red-600">✘ Não verificado</span>
-                      }
-                    </p>
-                    <p className="text-gray-600 text-sm mb-3">{fc.explicacao}</p>
-                  </div>
-                ))
-              )
-            },
-            {
               title: "Notícias",
               render: (
                 result.noticias.map((item, i) => (
